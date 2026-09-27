@@ -1,0 +1,1311 @@
+/* ========================================
+   GLOBAL
+======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+:root {
+
+    --background: #070a09;
+    --card: #101512;
+    --card-light: #151b17;
+
+    --green: #b6ff00;
+    --green-dark: #7eb500;
+
+    --white: #f5f7f4;
+    --grey: #89938d;
+    --border: #27302b;
+
+}
+
+
+body {
+
+    min-height: 100vh;
+
+    background: var(--background);
+
+    color: var(--white);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    overflow-x: hidden;
+
+}
+
+
+/* ========================================
+   BACKGROUND GLOW
+======================================== */
+
+.background-glow {
+
+    position: fixed;
+
+    width: 450px;
+    height: 450px;
+
+    border-radius: 50%;
+
+    filter: blur(130px);
+
+    opacity: 0.12;
+
+    pointer-events: none;
+
+}
+
+
+.glow-one {
+
+    background: var(--green);
+
+    top: -200px;
+    left: -150px;
+
+}
+
+
+.glow-two {
+
+    background: #7a4cff;
+
+    right: -200px;
+    bottom: -200px;
+
+}
+
+
+/* ========================================
+   MAIN APP
+======================================== */
+
+.app {
+
+    width: 100%;
+
+    max-width: 1000px;
+
+    min-height: 100vh;
+
+    margin: auto;
+
+    padding: 25px 30px;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+/* ========================================
+   TOP BAR
+======================================== */
+
+.top-bar {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 18px;
+
+}
+
+
+.logo {
+
+    font-size: 27px;
+
+    font-weight: 900;
+
+    letter-spacing: -1px;
+
+}
+
+
+.logo span {
+
+    color: var(--green);
+
+}
+
+
+.step-counter {
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    color: var(--grey);
+
+}
+
+
+.step-counter span {
+
+    color: var(--green);
+
+}
+
+
+/* ========================================
+   PROGRESS BAR
+======================================== */
+
+.progress-container {
+
+    width: 100%;
+
+    height: 4px;
+
+    background: #1a211d;
+
+    border-radius: 20px;
+
+    margin-bottom: 35px;
+
+    overflow: hidden;
+
+}
+
+
+.progress-bar {
+
+    height: 100%;
+
+    width: 14.28%;
+
+    background: var(--green);
+
+    border-radius: 20px;
+
+    transition: width 0.4s ease;
+
+}
+
+
+/* ========================================
+   FORM CARD
+======================================== */
+
+.form-card {
+
+    width: 100%;
+
+    max-width: 650px;
+
+    margin: auto;
+
+    background: rgba(16, 21, 18, 0.94);
+
+    border: 1px solid var(--border);
+
+    border-radius: 28px;
+
+    padding: 55px;
+
+    box-shadow:
+        0 30px 100px rgba(0, 0, 0, 0.35);
+
+}
+
+
+/* ========================================
+   STEPS
+======================================== */
+
+.step {
+
+    display: none;
+
+    animation: fadeIn 0.35s ease;
+
+}
+
+
+.step.active {
+
+    display: block;
+
+}
+
+
+@keyframes fadeIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(12px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+
+/* ========================================
+   TEXT
+======================================== */
+
+.emoji {
+
+    font-size: 42px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.small-heading {
+
+    font-size: 11px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    color: var(--green);
+
+    margin-bottom: 13px;
+
+}
+
+
+h1 {
+
+    font-size: 48px;
+
+    line-height: 1.05;
+
+    letter-spacing: -2px;
+
+    margin-bottom: 15px;
+
+}
+
+
+h1 span {
+
+    color: var(--green);
+
+}
+
+
+.description {
+
+    color: var(--grey);
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    margin-bottom: 35px;
+
+}
+
+
+/* ========================================
+   INPUT
+======================================== */
+
+.input-container {
+
+    margin-bottom: 25px;
+
+}
+
+
+.input-container label {
+
+    display: block;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+
+    color: var(--grey);
+
+    margin-bottom: 9px;
+
+}
+
+
+.input-container input,
+.input-container select {
+
+    width: 100%;
+
+    height: 58px;
+
+    padding: 0 17px;
+
+    background: #080c0a;
+
+    border: 1px solid var(--border);
+
+    border-radius: 13px;
+
+    color: var(--white);
+
+    font-size: 16px;
+
+    outline: none;
+
+    transition: 0.2s;
+
+}
+
+
+.input-container input::placeholder {
+
+    color: #505a54;
+
+}
+
+
+.input-container input:focus,
+.input-container select:focus {
+
+    border-color: var(--green);
+
+    box-shadow:
+        0 0 0 3px rgba(182, 255, 0, 0.08);
+
+}
+
+
+.input-container select {
+
+    appearance: none;
+
+    cursor: pointer;
+
+}
+
+
+/* ========================================
+   PHONE INPUT
+======================================== */
+
+.phone-input {
+
+    display: flex;
+
+    align-items: center;
+
+    background: #080c0a;
+
+    border: 1px solid var(--border);
+
+    border-radius: 13px;
+
+    overflow: hidden;
+
+}
+
+
+.phone-input span {
+
+    padding: 0 16px;
+
+    color: var(--green);
+
+    font-weight: bold;
+
+    border-right: 1px solid var(--border);
+
+}
+
+
+.phone-input input {
+
+    border: none;
+
+    border-radius: 0;
+
+}
+
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+.next-btn {
+
+    border: none;
+
+    background: var(--green);
+
+    color: #101500;
+
+    height: 55px;
+
+    padding: 0 28px;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+
+.next-btn:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 30px rgba(182, 255, 0, 0.15);
+
+}
+
+
+.back-btn {
+
+    height: 55px;
+
+    padding: 0 20px;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--border);
+
+    background: transparent;
+
+    color: var(--grey);
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+
+.back-btn:hover {
+
+    color: white;
+
+    border-color: #46514b;
+
+}
+
+
+.button-row {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+}
+
+
+/* ========================================
+   GENDER
+======================================== */
+
+.gender-container {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 15px;
+
+    margin-bottom: 28px;
+
+}
+
+
+.gender-card {
+
+    min-height: 120px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    border-radius: 16px;
+
+    background: #080c0a;
+
+    border: 1px solid var(--border);
+
+    color: white;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+
+.gender-card:hover {
+
+    border-color: #607054;
+
+    transform: translateY(-2px);
+
+}
+
+
+.gender-card.selected {
+
+    border-color: var(--green);
+
+    background: rgba(182, 255, 0, 0.07);
+
+}
+
+
+.gender-icon {
+
+    width: 50px;
+
+    height: 50px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #171e19;
+
+    font-size: 26px;
+
+}
+
+
+.gender-card strong {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+}
+
+
+.gender-card small {
+
+    color: var(--grey);
+
+}
+
+
+/* ========================================
+   PROFILE PHOTO
+======================================== */
+
+.profile-photo-area {
+
+    text-align: center;
+
+    margin-bottom: 30px;
+
+}
+
+
+.profile-preview {
+
+    width: 125px;
+
+    height: 125px;
+
+    border-radius: 50%;
+
+    margin: 0 auto 20px;
+
+    border: 2px dashed #445044;
+
+    background: #080c0a;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    overflow: hidden;
+
+    font-size: 45px;
+
+}
+
+
+.profile-preview img {
+
+    display: none;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+}
+
+
+.upload-btn {
+
+    display: inline-block;
+
+    padding: 12px 20px;
+
+    background: #171e19;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+}
+
+
+.upload-btn:hover {
+
+    border-color: var(--green);
+
+}
+
+
+#profilePhoto,
+#aadhaarPhoto {
+
+    display: none;
+
+}
+
+
+.profile-photo-area p {
+
+    color: var(--grey);
+
+    font-size: 11px;
+
+    margin-top: 10px;
+
+}
+
+
+/* ========================================
+   DOCUMENT UPLOAD
+======================================== */
+
+.document-upload {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 16px;
+
+    background: #080c0a;
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.document-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #171e19;
+
+    font-size: 22px;
+
+}
+
+
+.document-info {
+
+    flex: 1;
+
+}
+
+
+.document-info strong {
+
+    display: block;
+
+    font-size: 13px;
+
+    margin-bottom: 5px;
+
+}
+
+
+.document-info small {
+
+    color: var(--grey);
+
+    font-size: 11px;
+
+}
+
+
+.upload-small {
+
+    padding: 9px 13px;
+
+    background: var(--green);
+
+    color: #101500;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+}
+
+
+/* ========================================
+   PRIVACY
+======================================== */
+
+.privacy-note {
+
+    padding: 13px;
+
+    background: rgba(255, 255, 255, 0.025);
+
+    border-radius: 10px;
+
+    color: var(--grey);
+
+    font-size: 11px;
+
+    line-height: 1.5;
+
+    margin-bottom: 25px;
+
+}
+
+
+/* ========================================
+   SUCCESS
+======================================== */
+
+.success-screen {
+
+    display: none;
+
+    text-align: center;
+
+    animation: fadeIn 0.4s ease;
+
+}
+
+
+.success-screen.active {
+
+    display: block;
+
+}
+
+
+.success-icon {
+
+    width: 80px;
+
+    height: 80px;
+
+    margin: 0 auto 25px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: var(--green);
+
+    color: #101500;
+
+    font-size: 40px;
+
+    font-weight: bold;
+
+}
+
+
+.summary-card {
+
+    background: #080c0a;
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    padding: 18px;
+
+    margin: 25px 0;
+
+    text-align: left;
+
+}
+
+
+.summary-card div {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 11px 0;
+
+    border-bottom: 1px solid #1d241f;
+
+}
+
+
+.summary-card div:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.summary-card span {
+
+    color: var(--grey);
+
+    font-size: 12px;
+
+}
+
+
+.summary-card strong {
+
+    font-size: 13px;
+
+}
+
+
+.dashboard-btn {
+
+    width: 100%;
+
+    height: 55px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    background: var(--green);
+
+    color: #101500;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+}
+
+
+/* ========================================
+   FOOTER
+======================================== */
+
+footer {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 25px;
+
+    color: #4c5650;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 700px) {
+
+    .app {
+
+        padding: 18px 15px;
+
+    }
+
+
+    .form-card {
+
+        padding: 35px 22px;
+
+        border-radius: 20px;
+
+    }
+
+
+    h1 {
+
+        font-size: 38px;
+
+    }
+
+
+    .gender-container {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    footer {
+
+        flex-direction: column;
+
+        gap: 8px;
+
+        text-align: center;
+
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    h1 {
+
+        font-size: 34px;
+
+    }
+
+
+    .button-row {
+
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+
+    }
+
+
+    .next-btn,
+    .back-btn {
+
+        width: 100%;
+
+    }
+
+
+    .document-upload {
+
+        flex-wrap: wrap;
+
+    }
+
+
+    .document-info {
+
+        min-width: 150px;
+
+    }
+    
+}
+/* ========================================
+   ALREADY REGISTERED
+======================================== */
+
+.already-registered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    width: fit-content;
+    margin: 0 auto 25px;
+    padding: 8px 12px;
+
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+
+    transition: 0.2s ease;
+}
+
+
+/* Hover effect for the whole section */
+
+.already-registered:hover {
+    border-color: #3a443e;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+
+/* "Already registered?" text */
+
+.already-registered p {
+    margin: 0;
+
+    color: var(--grey);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* Login button */
+
+.already-registered .login-btn {
+
+    height: auto;
+
+    padding: 6px 10px;
+
+    border: none;
+    background: transparent;
+
+    color: var(--green);
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* Login button hover */
+
+.already-registered .login-btn:hover {
+
+    color: var(--white);
+
+    transform: translateX(2px);
+}
+
+
+/* Login button click */
+
+.already-registered .login-btn:active {
+
+    transform: scale(0.96);
+
+}
+
+/* ========================================
+   EXISTING USER LOGIN SCREEN
+======================================== */
+
+.existing-login-screen {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+
+    padding: 40px;
+
+    background: rgba(16, 21, 18, 0.96);
+
+    border: 1px solid var(--border);
+    border-radius: 24px;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.35);
+
+    text-align: center;
+}
+
+
+.login-card h2 {
+    margin-bottom: 10px;
+
+    font-size: 30px;
+    letter-spacing: -1px;
+}
+
+
+.login-card > p {
+    margin-bottom: 28px;
+
+    color: var(--grey);
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+
+.login-card input {
+    width: 100%;
+    height: 55px;
+
+    padding: 0 16px;
+    margin-bottom: 15px;
+
+    background: #080c0a;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    color: var(--white);
+
+    font-family: inherit;
+    font-size: 15px;
+
+    outline: none;
+
+    transition: 0.2s ease;
+}
+
+
+.login-card input::placeholder {
+    color: #505a54;
+}
+
+
+.login-card input:focus {
+    border-color: var(--green);
+
+    box-shadow:
+        0 0 0 3px rgba(182, 255, 0, 0.08);
+}
+
+
+.login-card .login-btn {
+    width: 100%;
+    height: 55px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: var(--green);
+    color: #101500;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 900;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.login-card .login-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 30px rgba(182, 255, 0, 0.15);
+}
+
+
+#loginOtpArea {
+    margin-top: 20px;
+}
+
+
+#loginOtpArea p {
+    color: var(--grey);
+
+    font-size: 13px;
+
+    margin-bottom: 12px;
+}
+
+
+#loginOtpTimer {
+    margin-top: 12px;
+
+    color: var(--green) !important;
+
+    font-size: 12px !important;
+}
+
+
+.login-card .back-btn {
+    width: 100%;
+
+    margin-top: 15px;
+
+    background: transparent;
+}
+

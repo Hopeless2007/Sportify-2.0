@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sportify - Sports Social & Booking Platform</title>
+  <link rel="stylesheet" href="appstyle.css" />
+</head>
+<body>
+
+  <!-- ========================================================
+       AUTH MODAL: LOGIN / SIGN-UP / DEMO ACCOUNT SWITCHER
+  ========================================================= -->
+  <div class="auth-modal" id="auth-modal" style="display: none;">
+    <div class="auth-modal-card">
+      <div class="auth-modal-header">
+        <div class="brand-badge-mini">⚡ Sportify Auth</div>
+        <button class="btn-close" onclick="toggleAuthModal(false)">✕</button>
+      </div>
+
+      <!-- Auth Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-btn-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')">New Athlete</button>
+        <button class="auth-tab-btn" id="tab-btn-demo" onclick="switchAuthTab('demo')">Quick Switch ⚡</button>
+      </div>
+
+      <!-- TAB 1: LOGIN FORM -->
+      <form id="form-login" class="auth-form-body" onsubmit="handleLogin(event)">
+        <div class="input-field">
+          <label>Username / Handle</label>
+          <input type="text" id="login-username" placeholder="e.g. @vikram_sports or vikram" required />
+        </div>
+        <div class="input-field">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn-primary-large auth-submit-btn">Sign In to Sportify</button>
+        <p class="auth-hint">Default demo password for athletes is: <code>sportify123</code></p>
+      </form>
+
+      <!-- TAB 2: SIGN UP FORM -->
+      <form id="form-register" class="auth-form-body" style="display: none;" onsubmit="handleRegister(event)">
+        <div class="form-grid">
+          <div class="input-field">
+            <label>Full Name *</label>
+            <input type="text" id="reg-name" placeholder="e.g. Sameer Verma" required />
+          </div>
+          <div class="input-field">
+            <label>Handle / Username *</label>
+            <input type="text" id="reg-handle" placeholder="@sameer_sports" required />
+          </div>
+          <div class="input-field">
+            <label>Primary Sport *</label>
+            <select id="reg-sport" required>
+              <option value="⚽ Football">⚽ Football</option>
+              <option value="🏏 Cricket">🏏 Cricket</option>
+              <option value="🏀 Basketball">🏀 Basketball</option>
+              <option value="🎾 Tennis">🎾 Tennis</option>
+              <option value="🏋️ Fitness & Gym">🏋️ Fitness & Gym</option>
+              <option value="🏊 Swimming & Kayaking">🏊 Swimming & Kayaking</option>
+              <option value="🏸 Badminton">🏸 Badminton</option>
+            </select>
+          </div>
+          <div class="input-field">
+            <label>Club / Position</label>
+            <input type="text" id="reg-role" placeholder="e.g. Forward @ TT Nagar Strikers" />
+          </div>
+          <div class="input-field full-width">
+            <label>Password *</label>
+            <input type="password" id="reg-password" placeholder="Create a secure password" required />
+          </div>
+          <div class="input-field full-width">
+            <label>Short Bio</label>
+            <textarea id="reg-bio" rows="2" placeholder="Tell athletes about your playing style, home ground, and goals..."></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary-large auth-submit-btn">Create Athlete Profile</button>
+      </form>
+
+      <!-- TAB 3: QUICK DEMO ACCOUNTS LIST -->
+      <div id="demo-accounts-list" class="auth-form-body" style="display: none;">
+        <p class="demo-subtext">Click any    athlete to instantly load their profile & database record:</p>
+        <div class="demo-cards-stack" id="demo-users-container">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL: EDIT PROFILE
+  ========================================================= -->
+  <div class="auth-modal" id="edit-profile-modal" style="display: none;">
+    <div class="auth-modal-card">
+      <div class="auth-modal-header">
+        <div class="brand-badge-mini">✏️ Edit Athlete Profile</div>
+        <button class="btn-close" onclick="toggleEditProfileModal(false)">✕</button>
+      </div>
+
+      <form id="form-edit-profile" class="auth-form-body" onsubmit="handleSaveProfile(event)">
+        <div class="form-grid">
+          <div class="input-field">
+            <label>Full Name</label>
+            <input type="text" id="edit-name" required />
+          </div>
+          <div class="input-field">
+            <label>Handle (@)</label>
+            <input type="text" id="edit-handle" required />
+          </div>
+          <div class="input-field full-width">
+            <label>Athlete Title / Position</label>
+            <input type="text" id="edit-role" placeholder="e.g. Striker & MP State Athlete" required />
+          </div>
+          <div class="input-field full-width">
+            <label>Bio & Achievements</label>
+            <textarea id="edit-bio" rows="3" required></textarea>
+          </div>
+          <div class="input-field full-width">
+            <label>Sports Badges (comma separated)</label>
+            <input type="text" id="edit-badges" placeholder="⚽ Football, 🏋️ Fitness, 🏃 Upper Lake Run" />
+          </div>
+        </div>
+        <div class="form-submit-row">
+          <button type="button" class="btn-outline" onclick="toggleEditProfileModal(false)">Cancel</button>
+          <button type="submit" class="btn-primary">Save Changes ✓</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL: REPORT USER & SCAMMER INTERFACE
+  ========================================================= -->
+  <div class="auth-modal" id="report-modal" style="display: none;">
+    <div class="auth-modal-card report-modal-card">
+      <div class="auth-modal-header">
+        <div class="report-header-badge">
+          <span class="report-shield-icon">🛡️</span>
+          <div>
+            <strong>Report Scammer or Bad Actor</strong>
+            <small class="report-subheading">Help keep the Sportify athlete community safe</small>
+          </div>
+        </div>
+        <button class="btn-close" onclick="toggleReportModal(false)">✕</button>
+      </div>
+
+      <!-- Target Athlete Header Banner -->
+      <div class="report-target-banner" id="report-target-banner">
+        <div class="user-avatar" id="report-target-avatar">RM</div>
+        <div class="report-target-info">
+          <h4 id="report-target-name">Rahul Mehta</h4>
+          <span id="report-target-handle">@rahul_striker • Football</span>
+        </div>
+        <span class="report-warning-chip">Flagging Account</span>
+      </div>
+
+      <form id="form-report-user" class="auth-form-body report-form-scroll" onsubmit="handleReportSubmit(event)">
+        <p class="report-section-label">Select the reason that best describes this violation:</p>
+
+        <!-- Violation Reasons Radio List -->
+        <div class="report-reasons-grid">
+          <label class="report-reason-card">
+            <input type="radio" name="report-reason" value="fake_profile" required />
+            <div class="reason-indicator"></div>
+            <div class="reason-text">
+              <strong>🎭 Fake profile</strong>
+              <small>Bot, impersonated identity, or fabricated sports credentials</small>
+            </div>
+          </label>
+
+          <label class="report-reason-card">
+            <input type="radio" name="report-reason" value="inappropriate_behaviour" />
+            <div class="reason-indicator"></div>
+            <div class="reason-text">
+              <strong>⚠️ Inappropriate behaviour</strong>
+              <small>Unsportsmanlike conduct, offensive language, or NSFW content</small>
+            </div>
+          </label>
+
+          <label class="report-reason-card highlight-fraud">
+            <input type="radio" name="report-reason" value="fraud" />
+            <div class="reason-indicator"></div>
+            <div class="reason-text">
+              <strong>💳 Fraud & Financial Scam</strong>
+              <small>Fake turf deposit fees, tournament prize scam, or fake tickets</small>
+            </div>
+          </label>
+
+          <label class="report-reason-card">
+            <input type="radio" name="report-reason" value="bullying" />
+            <div class="reason-indicator"></div>
+            <div class="reason-text">
+              <strong>🚫 Bullying or harassment</strong>
+              <small>Persistent stalking, threats, intimidation, or athlete defamation</small>
+            </div>
+          </label>
+
+          <label class="report-reason-card">
+            <input type="radio" name="report-reason" value="spam" />
+            <div class="reason-indicator"></div>
+            <div class="reason-text">
+              <strong>📢 Spam & Commercial Promotions</strong>
+              <small>Unsolicited bot DMs, repeated commercial links, or fake giveaways</small>
+            </div>
+          </label>
+
+          <label class="report-reason-card">
+            <input type="radio" name="report-reason" value="violence" />
+            <div class="reason-indicator"></div>
+            <div class="reason-text">
+              <strong>⚔️ Violence or dangerous organisation</strong>
+              <small>Threats of physical violence at grounds or dangerous group activity</small>
+            </div>
+          </label>
+
+          <label class="report-reason-card" id="reason-card-pretend">
+            <input type="radio" name="report-reason" value="pretending" />
+            <div class="reason-indicator"></div>
+            <div class="reason-text">
+              <strong>👤 Pretending to be someone else</strong>
+              <small>Impersonating a celebrity, coach, state athlete, or another member</small>
+            </div>
+          </label>
+
+          <label class="report-reason-card">
+            <input type="radio" name="report-reason" value="others" />
+            <div class="reason-indicator"></div>
+            <div class="reason-text">
+              <strong>📝 Others</strong>
+              <small>Other violations of the Sportify athlete community charter</small>
+            </div>
+          </label>
+        </div>
+
+        <!-- Dynamic Conditional Input for Pretending -->
+        <div class="input-field" id="pretending-field" style="display: none;">
+          <label>Who are they pretending to be?</label>
+          <select id="report-pretend-target">
+            <option value="famous_athlete">A recognized pro athlete / celebrity</option>
+            <option value="myself">Me (Identity theft)</option>
+            <option value="coach_or_club">A registered club official / coach</option>
+            <option value="someone_else">A friend or someone I know</option>
+          </select>
+        </div>
+
+        <!-- Evidence & Details Field -->
+        <div class="input-field full-width">
+          <label>Details & Evidence *</label>
+          <textarea id="report-details" rows="3" placeholder="Provide context, e.g. fraudulent payment link, threatening messages, or match match-fixing attempts..." required></textarea>
+        </div>
+
+        <!-- Evidence Upload / Attachment Mock -->
+        <div class="upload-evidence-box" onclick="simulateEvidenceUpload()">
+          <span class="upload-icon">📎</span>
+          <div>
+            <strong id="evidence-label">Attach Proof / Screenshot (Optional)</strong>
+            <small id="evidence-subtext">Chat transcripts, fake payment screenshots (PNG, JPG up to 10MB)</small>
+          </div>
+          <button type="button" class="btn-tool-chip" style="margin-left: auto;">Upload</button>
+        </div>
+
+        <!-- Block Target Checkbox -->
+        <label class="report-checkbox-row">
+          <input type="checkbox" id="report-auto-block" checked />
+          <span>Also block this athlete immediately and prevent them from contacting me</span>
+        </label>
+
+        <div class="safety-guarantee-note">
+          🔒 Reports are confidential. The reported user will not be notified who submitted the report. Our 24/7 Safety Desk reviews flagged fraud and harassment cases promptly.
+        </div>
+
+        <div class="form-submit-row">
+          <button type="button" class="btn-outline" onclick="toggleReportModal(false)">Cancel</button>
+          <button type="submit" class="btn-danger-submit">🚩 Submit Safety Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL: SAFETY CENTER / BLOCKED ATHLETES VAULT
+  ========================================================= -->
+  <div class="auth-modal" id="safety-modal" style="display: none;">
+    <div class="auth-modal-card">
+      <div class="auth-modal-header">
+        <div class="brand-badge-mini">🛡️ Sportify Safety Center</div>
+        <button class="btn-close" onclick="toggleSafetyModal(false)">✕</button>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-safety-blocked" onclick="switchSafetyTab('blocked')">Blocked Profiles (<span id="safety-blocked-count">0</span>)</button>
+        <button class="auth-tab-btn" id="tab-safety-reports" onclick="switchSafetyTab('reports')">My Filed Reports (<span id="safety-reports-count">0</span>)</button>
+      </div>
+
+      <div class="auth-form-body" id="safety-blocked-view">
+        <div class="blocked-users-list" id="safety-blocked-list">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <div class="auth-form-body" id="safety-reports-view" style="display: none;">
+        <div class="safety-reports-stack" id="safety-reports-list">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MAIN APP SHELL
+  ========================================================= -->
+  <div class="app-container">
+
+    <!-- 1. Left Navigation Sidebar -->
+    <aside class="sidebar">
+      <div class="brand-logo" title="Sportify" onclick="switchTab('home')">
+        <span class="logo-icon">⚡</span>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" onclick="switchTab('home')" id="btn-home" title="Home Feed">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">Home</span>
+        </button>
+
+        <button class="nav-item" onclick="switchTab('profile')" id="btn-profile" title="Athlete Profile">
+          <span class="nav-icon">👤</span>
+          <span class="nav-label">Profile</span>
+        </button>
+
+        <button class="nav-item" onclick="switchTab('community')" id="btn-community" title="Sports Communities">
+          <span class="nav-icon">🌐</span>
+          <span class="nav-label">Community</span>
+          <span class="pill-badge" id="badge-community-count">3</span>
+        </button>
+
+        <button class="nav-item" onclick="switchTab('chat')" id="btn-chat" title="Messages">
+          <span class="nav-icon">💬</span>
+          <span class="nav-label">Chat</span>
+          <span class="pill-badge" id="badge-chat-count">5</span>
+        </button>
+
+        <button class="nav-item" onclick="switchTab('booking')" id="btn-booking" title="Book Turfs & Gyms">
+          <span class="nav-icon">📅</span>
+          <span class="nav-label">Bookings</span>
+        </button>
+
+        <button class="nav-item" onclick="switchTab('events')" id="btn-events" title="Events & Tournaments">
+          <span class="nav-icon">🏆</span>
+          <span class="nav-label">Events</span>
+        </button>
+
+        <button class="nav-item nav-safety-btn" onclick="toggleSafetyModal(true)" id="btn-safety" title="Safety & Reports Center">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Safety</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar User Avatar -->
+      <div class="sidebar-user" onclick="switchTab('profile')" title="My Athlete Profile">
+        <div class="avatar-circle" id="sidebar-user-avatar"></div>
+      </div>
+    </aside>
+
+    <!-- 2. Main Content Screens -->
+    <main class="main-viewport">
+
+      <!-- ========================================================
+           SCREEN 1: HOME FEED
+      ========================================================= -->
+      <section class="screen-view active" id="view-home">
+        <div class="home-grid">
+         
+          <div class="feed-column">
+            <!-- Header -->
+            <header class="content-header">
+              <div>
+                <h1 id="feed-greeting">⚡ Sportify Feed</h1>
+                <small class="greeting-subtitle">Welcome back, <span id="feed-user-name"></span>!</small>
+              </div>
+              <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Search athletes, clubs, turfs..." />
+              </div>
+            </header>
+
+            <!-- Instagram-Style Stories -->
+            <div class="stories-strip">
+              <div class="story-create" onclick="openStoryEditorModal()" title="Add your story">
+                <div class="story-add-bubble story-add-plus" id="story-my-avatar">
+                  <span class="story-plus-badge">+</span>
+                </div>
+                <span id="story-my-label">Your Story</span>
+              </div>
+
+              <div class="story-card" onclick="viewAthleteProfile('rahul')">
+                <div class="story-avatar-ring">
+                  <div class="story-img-placeholder">⚽</div>
+                </div>
+                <span>Rahul M.</span>
+              </div>
+
+              <div class="story-card" onclick="viewAthleteProfile('priya')">
+                <div class="story-avatar-ring">
+                  <div class="story-img-placeholder">🏀</div>
+                </div>
+                <span>Priya S.</span>
+              </div>
+
+              <div class="story-card" onclick="viewAthleteProfile('arjun')">
+                <div class="story-avatar-ring">
+                  <div class="story-img-placeholder">🏏</div>
+                </div>
+                <span>Arjun K.</span>
+              </div>
+
+              <div class="story-card" onclick="viewAthleteProfile('sneha')">
+                <div class="story-avatar-ring">
+                  <div class="story-img-placeholder">🎾</div>
+                </div>
+                <span>Sneha R.</span>
+              </div>
+
+              <div class="story-card" onclick="showToast('Viewing Kavya Tiwari CrossFit story!')">
+                <div class="story-avatar-ring viewed">
+                  <div class="story-img-placeholder">🏋️</div>
+                </div>
+                <span>Kavya T.</span>
+              </div>
+
+              <div class="story-card" onclick="showToast('Viewing Dev Prakash kayak session story!')">
+                <div class="story-avatar-ring viewed">
+                  <div class="story-img-placeholder">🏊</div>
+                </div>
+                <span>Dev P.</span>
+              </div>
+            </div>
+
+            <!-- Feed Post 1 -->
+            <article class="post-card" id="post-card-rahul" data-author="rahul">
+              <div class="post-head">
+                <div class="user-avatar bg-blue cursor-pointer" onclick="viewAthleteProfile('rahul')">RM</div>
+                <div class="user-meta cursor-pointer" onclick="viewAthleteProfile('rahul')">
+                  <h3>Rahul Mehta <span class="verified-badge">✓</span></h3>
+                  <p>⚽ Football • 2 hours ago • TT Nagar Stadium Arena, Bhopal</p>
+                </div>
+                <div class="post-head-actions">
+                  <button class="icon-action-btn" onclick="openDirectMessage('rahul')">💬 Message</button>
+                  <button class="icon-action-btn btn-report-mini" onclick="openReportModalById('rahul')" title="Report this user or post">🚩 Report</button>
+                </div>
+              </div>
+
+              <div class="post-media gradient-pitch">
+                <div class="media-badge">📍 TT Nagar Stadium Grounds, Bhopal</div>
+                <span class="media-icon-large">⚽</span>
+              </div>
+
+              <div class="post-content">
+                <p>Electric semifinal under the floodlights at TT Nagar Stadium! Scored 2 goals in the second half and booked our place in the championship final 🏆 Huge thanks to everyone who came out to support!</p>
+                <div class="tag-row">
+                  <span class="hash-tag">#Football</span>
+                  <span class="hash-tag">#TTNagar</span>
+                  <span class="hash-tag">#SportifyMatch</span>
+                </div>
+              </div>
+
+              <div class="post-interactions">
+                <button class="interaction-btn liked" onclick="toggleHeart(this)">
+                  <span class="btn-icon">❤️</span> <span class="like-count">1,840</span>
+                </button>
+                <button class="interaction-btn" onclick="openDirectMessage('rahul')">
+                  <span class="btn-icon">💬</span> 112
+                </button>
+                <button class="interaction-btn" onclick="showToast('Post shared to athlete network!')">
+                  <span class="btn-icon">↗️</span> Share
+                </button>
+                <button class="interaction-btn save-btn" onclick="toggleSavePost(this)">
+                  <span class="btn-icon">🔖</span>
+                </button>
+              </div>
+            </article>
+
+            <!-- Feed Post 2 -->
+            <article class="post-card" id="post-card-arjun" data-author="arjun">
+              <div class="post-head">
+                <div class="user-avatar bg-orange cursor-pointer" onclick="viewAthleteProfile('arjun')">AK</div>
+                <div class="user-meta cursor-pointer" onclick="viewAthleteProfile('arjun')">
+                  <h3>Arjun Kumar</h3>
+                  <p>🏏 Cricket • 5 hours ago • Aishbagh Stadium Grounds, Bhopal</p>
+                </div>
+                <div class="post-head-actions">
+                  <button class="icon-action-btn" onclick="openDirectMessage('arjun')">💬 Message</button>
+                  <button class="icon-action-btn btn-report-mini" onclick="openReportModalById('arjun')" title="Report this user or post">🚩 Report</button>
+                </div>
+              </div>
+
+              <div class="post-media gradient-court">
+                <div class="media-badge">🏟️ Bhopal Premier T20 Championship</div>
+                <span class="media-icon-large">🏏</span>
+              </div>
+
+              <div class="post-content">
+                <p>Ton up at Aishbagh! 💯 Hit 104 off 56 balls in the weekend league. Hard work at the nets is showing results. Next practice session scheduled at Arera Club on Wednesday morning.</p>
+                <div class="tag-row">
+                  <span class="hash-tag">#Cricket</span>
+                  <span class="hash-tag">#Century</span>
+                  <span class="hash-tag">#MatchDay</span>
+                </div>
+              </div>
+
+              <div class="post-interactions">
+                <button class="interaction-btn" onclick="toggleHeart(this)">
+                  <span class="btn-icon">🤍</span> <span class="like-count">1,420</span>
+                </button>
+                <button class="interaction-btn" onclick="openDirectMessage('arjun')">
+                  <span class="btn-icon">💬</span> 64
+                </button>
+                <button class="interaction-btn" onclick="showToast('Match report shared!')">
+                  <span class="btn-icon">↗️</span> Share
+                </button>
+                <button class="interaction-btn save-btn" onclick="toggleSavePost(this)">
+                  <span class="btn-icon">🔖</span>
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <!-- Feed Right Sidebar -->
+          <aside class="feed-sidebar">
+            <div class="card-panel current-auth-card">
+              <div class="user-strip-compact">
+                <div class="user-avatar cursor-pointer" id="home-side-avatar" onclick="viewAthleteProfile(currentUser.id)"></div>
+                <div class="user-strip-info cursor-pointer" onclick="viewAthleteProfile(currentUser.id)">
+                  <strong id="home-side-name"></strong>
+                  <small id="home-side-handle"></small>
+                </div>
+                <button class="btn-switch-account" onclick="toggleAuthModal(true)" title="Switch Account">Switch</button>
+              </div>
+            </div>
+
+            <!-- Safety Banner Widget -->
+            <div class="card-panel safety-card-panel">
+              <div class="safety-panel-head">
+                <span>🛡️ Athlete Protection</span>
+                <button class="btn-tool-chip" onclick="toggleSafetyModal(true)">Safety Hub</button>
+              </div>
+              <p class="safety-panel-text">Encountered fraudulent fees, impersonation, or sports betting scams? Report to the 24/7 Safety Desk.</p>
+            </div>
+
+            <div class="card-panel">
+              <h3 class="panel-heading">🔥 Trending Sports Topics</h3>
+              <ul class="trending-list">
+                <li>
+                  <span class="trend-rank">#1</span>
+                  <div class="trend-detail">
+                    <strong>#MPStateGames</strong>
+                    <small>38.4K posts</small>
+                  </div>
+                </li>
+                <li>
+                  <span class="trend-rank">#2</span>
+                  <div class="trend-detail">
+                    <strong>#TTNagarSuperLeague</strong>
+                    <small>24.8K posts</small>
+                  </div>
+                </li>
+                <li>
+                  <span class="trend-rank">#3</span>
+                  <div class="trend-detail">
+                    <strong>#UpperLakeMarathon</strong>
+                    <small>18.2K posts</small>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="card-panel">
+              <h3 class="panel-heading">👥 Suggested Athletes</h3>
+              <div class="athlete-suggestion-row">
+                <div class="user-avatar bg-teal cursor-pointer" onclick="viewAthleteProfile('sneha')">SR</div>
+                <div class="suggestion-info cursor-pointer" onclick="viewAthleteProfile('sneha')">
+                  <strong>Sneha Rao</strong>
+                  <small>🎾 Tennis • MP State Seed #1</small>
+                </div>
+                <button class="pill-follow-btn" onclick="toggleFollow(this)">Follow</button>
+              </div>
+
+              <div class="athlete-suggestion-row">
+                <div class="user-avatar bg-indigo">DP</div>
+                <div class="suggestion-info">
+                  <strong>Dev Prakash</strong>
+                  <small>🏊 Upper Lake Kayaking & Swim</small>
+                </div>
+                <button class="pill-follow-btn" onclick="toggleFollow(this)">Follow</button>
+              </div>
+
+              <div class="athlete-suggestion-row">
+                <div class="user-avatar bg-purple">KT</div>
+                <div class="suggestion-info">
+                  <strong>Kavya Tiwari</strong>
+                  <small>🏋️ CrossFit • MP Nagar Zone 2</small>
+                </div>
+                <button class="pill-follow-btn following" onclick="toggleFollow(this)">Following</button>
+              </div>
+            </div>
+
+            <div class="card-panel live-box">
+              <span class="live-dot">● LIVE NOW</span>
+              <h4>Bhopal Warriors vs MP United</h4>
+              <p>⚽ 72' [ 2 - 1 ] • 1,280 Watching</p>
+            </div>
+          </aside>
+
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 2: ATHLETE PROFILE (WITH BLOCK & REPORT ACTIONS)
+      ========================================================= -->
+      <section class="screen-view" id="view-profile">
+        <div class="profile-container">
+         
+          <!-- Banner & Header -->
+          <div class="profile-banner" id="profile-banner-el">
+            <div class="banner-overlay"></div>
+            <div class="banner-emojis" id="profile-banner-emojis">⚽ 🏀 🏏 🎾 🏋️</div>
+          </div>
+
+          <div class="profile-details-wrap">
+            <div class="profile-top-row">
+              <div class="profile-avatar-holder">
+                <div class="profile-avatar-core" id="profile-avatar-core"></div>
+                <span class="active-badge" title="Online"></span>
+              </div>
+
+              <!-- Profile Action Buttons (Dynamically adjusts if viewing self vs another athlete) -->
+              <div class="profile-header-actions" id="profile-actions-bar">
+                <button class="btn-outline" id="btn-profile-edit" onclick="openEditProfileModal()">✏️ Edit Profile</button>
+                <button class="btn-outline" id="btn-profile-switch" onclick="toggleAuthModal(true)">🔄 Switch / Login</button>
+
+                <!-- Combined Instagram-style ➕ Create button (top-right for own profile) -->
+                <div class="create-btn-wrapper" id="btn-profile-create-wrap">
+                  <button class="btn-create-combined" id="btn-profile-create" onclick="toggleCreateMenu(event)" title="Create Post or Reel">
+                    <span class="create-plus-icon">＋</span>
+                    <span>Create</span>
+                  </button>
+                  <div class="create-menu-dropdown" id="create-menu-dropdown">
+                    <button class="create-menu-item" onclick="closeCreateMenu(); openUploadModal('post')">
+                      <span>📷</span>
+                      <div>
+                        <strong>Post</strong>
+                        <small>Share a photo or moment</small>
+                      </div>
+                    </button>
+                    <button class="create-menu-item" onclick="closeCreateMenu(); openUploadModal('reel')">
+                      <span>🎬</span>
+                      <div>
+                        <strong>Reel</strong>
+                        <small>Upload a short video clip</small>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Report & Block Buttons -->
+                <button class="btn-outline btn-report-action" id="btn-profile-report" onclick="triggerReportForActiveProfile()" title="Report user for scam or harassment">
+                  🚩 Report
+                </button>
+                <button class="btn-outline btn-block-action" id="btn-profile-block" onclick="triggerBlockForActiveProfile()" title="Block or unblock this athlete">
+                  🚫 Block
+                </button>
+               
+                <button class="btn-primary" onclick="showToast('Profile link copied to clipboard! 📋')">↗️ Share</button>
+              </div>
+            </div>
+
+            <!-- Blocked Notice Banner (shown only when this profile is blocked by current user) -->
+            <div class="blocked-profile-alert" id="blocked-profile-banner" style="display: none;">
+              <div class="alert-icon">🚫</div>
+              <div class="alert-text">
+                <strong>You have blocked this athlete</strong>
+                <p>Their posts, messages, and match invitations are muted from your feed and chat. They cannot see your online activity.</p>
+              </div>
+              <button class="btn-primary" onclick="triggerBlockForActiveProfile()">Unblock Athlete</button>
+            </div>
+
+            <div class="profile-bio-block">
+              <h2><span id="profile-display-name"></span> <span class="verified-badge">✓</span></h2>
+              <span class="handle-name" id="profile-display-handle">@vikram_sports • Pro Striker & Athlete</span>
+              <p class="bio-text" id="profile-display-bio">
+                ⚽ Captain @ Bhopal Strikers FC | 🏋️ 500+ Fitness Days | 🎾 Shahpura Tennis Club<br />
+                "Play with heart, train with fire. The game never stops!" 🔥<br />
+                Open for team invites, tournaments & collaborations in Bhopal.
+              </p>
+
+              <!-- Dynamic Sports Badges -->
+              <div class="sport-tags-list" id="profile-tags-container">
+                <span class="sport-badge">⚽ Football</span>
+                <span class="sport-badge">🏋️ Fitness</span>
+                <span class="sport-badge">🎾 Tennis</span>
+                <span class="sport-badge">🏃 Upper Lake Run</span>
+              </div>
+            </div>
+
+            <!-- Follower & Following Counters -->
+            <div class="profile-stats-bar">
+              <div class="stat-unit">
+                <strong class="stat-number" id="stat-posts">194</strong>
+                <span class="stat-title">Posts</span>
+              </div>
+              <div class="stat-unit highlight">
+                <strong class="stat-number" id="stat-followers">48.6K</strong>
+                <span class="stat-title">Followers</span>
+              </div>
+              <div class="stat-unit">
+                <strong class="stat-number" id="stat-following">512</strong>
+                <span class="stat-title">Following</span>
+              </div>
+              <div class="stat-unit">
+                <strong class="stat-number" id="stat-matches">38</strong>
+                <span class="stat-title">Matches</span>
+              </div>
+              <div class="stat-unit">
+                <strong class="stat-number" id="stat-trophies">9</strong>
+                <span class="stat-title">Trophies</span>
+              </div>
+            </div>
+
+            <!-- Gallery Tabs -->
+            <div class="profile-tab-headers">
+              <button class="p-tab active" data-tab="posts" onclick="switchProfileTab(this, 'posts')">📷 Posts</button>
+              <button class="p-tab" data-tab="reels" onclick="switchProfileTab(this, 'reels')">🎬 Reels</button>
+              <button class="p-tab" data-tab="achievements" onclick="switchProfileTab(this, 'achievements')">🏆 Achievements</button>
+              <button class="p-tab" data-tab="tagged" onclick="switchProfileTab(this, 'tagged')">🏷️ Tagged</button>
+            </div>
+
+            <!-- Dynamic Photo / Reels Grid -->
+            <div class="photo-grid" id="profile-photo-grid">
+              <!-- Rendered dynamically by appjava.js -->
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 3: SPORTS COMMUNITIES
+      ========================================================= -->
+      <section class="screen-view" id="view-community">
+        <div class="community-layout">
+         
+          <!-- Communities Switcher Rail -->
+          <aside class="community-rail">
+            <div class="community-icon active" onclick="switchCommunity('bhopal-fc', this)" title="Bhopal FC Community">⚽</div>
+            <div class="community-icon" onclick="switchCommunity('mp-cricket', this)" title="MP Cricketers Hub">🏏<span class="unread-dot">4</span></div>
+            <div class="community-icon" onclick="switchCommunity('hoops-club', this)" title="Bhopal Hoops Community">🏀</div>
+            <div class="community-icon" onclick="switchCommunity('fitness-cult', this)" title="MP Nagar Fitness Cult">🏋️<span class="unread-dot">2</span></div>
+            <div class="community-icon" onclick="switchCommunity('tennis-club', this)" title="Shahpura Tennis League">🎾</div>
+            <div class="community-icon" onclick="switchCommunity('water-sports', this)" title="Upper Lake Water Sports">🏊</div>
+            <div class="community-icon add-community-btn" onclick="openCreateCommunityPrompt()" title="Create or Explore Community">+</div>
+          </aside>
+
+          <!-- Community Topics & Channels Sidebar -->
+          <div class="community-channel-sidebar">
+            <div class="community-nameplate">
+              <div class="comm-title-box">
+                <h3 id="comm-active-title">Bhopal FC Community</h3>
+                <small class="text-online" id="comm-active-members">🟢 512 Online • 6.8K Bhopal Athletes</small>
+              </div>
+            </div>
+
+            <!-- Dynamic Channels Container populated by JS -->
+            <div id="community-channels-container">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <div class="community-quick-action">
+              <button class="btn-primary full-width" id="btn-join-community" onclick="toggleJoinCommunity(this)">Joined ✓</button>
+            </div>
+          </div>
+
+          <!-- Community Main Discussion Area -->
+          <div class="community-board">
+            <header class="community-feed-header">
+              <div class="header-info">
+                <h2 id="comm-current-topic"># 📢-club-news</h2>
+                <p id="comm-current-desc">Official community updates, team lineups, pitch sessions, and tactical announcements.</p>
+              </div>
+              <div class="header-actions">
+                <button class="btn-primary" onclick="showToast('Community invite link copied to clipboard! 🚀')">➕ Invite Athletes</button>
+              </div>
+            </header>
+
+            <div class="discussion-feed" id="community-feed-stream">
+              <!-- Community Welcome Banner -->
+              <div class="banner-welcome" id="comm-welcome-banner">
+                <h2 id="comm-welcome-head">Welcome to Bhopal FC Community! 🏟️</h2>
+                <p id="comm-welcome-body">Connect with local players, organize weekend pick-up games at TT Nagar, review match footage, and build squads.</p>
+              </div>
+
+              <!-- Community Post Composer -->
+              <div class="community-composer-card">
+                <div class="user-avatar" id="comm-composer-avatar">VK</div>
+                <div class="composer-body">
+                  <input type="text" id="comm-post-input" placeholder="Share a tactical update, match clip, or organize a session..." onkeydown="handleCommunityPostEnter(event)" />
+                  <div class="composer-tools">
+                    <button class="btn-tool-chip" onclick="addPostTag('⚽ MatchDay')">⚽ MatchDay</button>
+                    <button class="btn-tool-chip" onclick="addPostTag('🏋️ Drills')">🏋️ Drills</button>
+                    <button class="btn-tool-chip" onclick="addPostTag('📍 TT Nagar')">📍 TT Nagar</button>
+                    <button class="btn-primary composer-post-btn" onclick="submitCommunityPost()">Post to Channel</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Discussion Posts Container -->
+              <div id="community-posts-list">
+                <!-- Dynamically populated per community & channel -->
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Community Online Athletes Roster -->
+          <div class="community-members-rail" id="community-roster-rail">
+            <!-- Dynamically populated per community -->
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 4: CHAT (DIRECT MESSAGES WITH SAFETY CONTROLS)
+      ========================================================= -->
+      <section class="screen-view" id="view-chat">
+        <div class="chat-app-wrapper">
+         
+          <!-- Chats Sidebar -->
+          <div class="chat-contacts-col">
+            <div class="chat-head-row">
+              <h2>Direct Messages</h2>
+              <button class="btn-icon-round" title="New Message" onclick="openNewChatModal()" id="btn-new-chat">✏️</button>
+            </div>
+
+            <!-- New Chat / Find User Modal -->
+            <div id="new-chat-modal" class="new-chat-modal-overlay" style="display:none;">
+              <div class="new-chat-modal-card">
+                <div class="new-chat-modal-header">
+                  <h3>🔎 Find a User</h3>
+                  <button class="btn-close" onclick="closeNewChatModal()">✕</button>
+                </div>
+                <div class="new-chat-search-wrap">
+                  <span>🔍</span>
+                  <input type="text" id="new-chat-search-input"
+                    placeholder="Search by name, username or phone..."
+                    oninput="searchUsersToChat(this.value)" autocomplete="off" />
+                </div>
+                <div id="new-chat-search-results" class="new-chat-results">
+                  <p class="new-chat-hint">Start typing to find registered users.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="search-bar chat-search">
+              <span>🔍</span>
+              <input type="text" id="chat-search-input" placeholder="Search chats & athletes..." oninput="filterChatContacts(this.value)" />
+            </div>
+
+            <div class="chat-filter-pills">
+              <span class="f-pill active" onclick="applyChatFilter('all', this)">All</span>
+              <span class="f-pill" onclick="applyChatFilter('teams', this)">Teams</span>
+              <span class="f-pill" onclick="applyChatFilter('unread', this)">Unread (<span id="chat-filter-unread-num">5</span>)</span>
+            </div>
+
+            <div class="contact-list" id="chat-contact-list">
+              <!-- Dynamically populated by script.js -->
+            </div>
+          </div>
+
+          <!-- Active Chat Window -->
+          <div class="chat-viewport">
+            <header class="chat-active-header">
+              <div class="user-avatar cursor-pointer" id="active-chat-avatar" onclick="openProfileFromActiveChat()">RM</div>
+              <div class="cursor-pointer" onclick="openProfileFromActiveChat()">
+                <h3 id="active-chat-name">Rahul Mehta ⚽</h3>
+                <small class="text-online" id="active-chat-status">● Online • Bhopal Strikers FC</small>
+              </div>
+              <div class="chat-header-tools">
+                <button class="btn-icon-round" title="Voice Call" onclick="showToast('Starting voice call with athlete...')">📞</button>
+                <button class="btn-icon-round" title="Video Call" onclick="showToast('Opening video session room...')">📹</button>
+               
+                <!-- Report in Chat Header -->
+                <button class="btn-icon-round btn-danger-icon" title="Report this conversation / user" onclick="triggerReportFromChat()">🚩</button>
+                <button class="btn-icon-round" title="Athlete Profile" onclick="openProfileFromActiveChat()">ℹ️</button>
+              </div>
+            </header>
+
+            <!-- Chat Blocked Notice Banner -->
+            <div class="chat-blocked-alert" id="chat-blocked-alert" style="display: none;">
+              <span>🚫 You have blocked this user. Messages cannot be sent or received.</span>
+              <button class="btn-unblock-compact" onclick="triggerUnblockFromChat()">Unblock</button>
+            </div>
+
+            <div class="chat-messages-stream" id="chat-stream">
+              <!-- Messages dynamically populated by script.js -->
+            </div>
+
+            <!-- Chat Input Box -->
+            <div class="chat-input-bar" id="chat-input-bar-container">
+              <button class="btn-tool" title="Emoji" onclick="insertChatEmoji('🔥')">🔥</button>
+              <button class="btn-tool" title="Quick Tag" onclick="insertChatEmoji('⚽')">⚽</button>
+              <input type="text" id="input-message" placeholder="Type a message or share match clip..." onkeydown="handleChatEnter(event)" />
+              <button class="btn-send" id="btn-chat-send" onclick="sendChatMessage()">Send ➤</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 5: BOOKINGS (TURFS, GYMS, TENNIS, POOLS)
+      ========================================================= -->
+      <section class="screen-view" id="view-booking">
+        <div class="booking-page-container">
+         
+          <!-- Booking Hero -->
+          <div class="booking-hero-card">
+            <div class="hero-left">
+              <h1>Instant Turf & Gym Booking</h1>
+              <p>Reserve football turfs, basketball courts, gyms, and swimming sessions in under 60 seconds.</p>
+             
+              <div class="booking-search-controls">
+                <input type="text" class="input-filter" placeholder="📍 Search area (e.g. TT Nagar, MP Nagar, Arera)" />
+                <input type="date" class="input-filter" value="2026-09-18" />
+                <button class="btn-primary" onclick="showToast('Showing verified facility slots near you!')">Find Slots</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Selector -->
+          <div class="booking-categories-row">
+            <button class="cat-chip active" onclick="filterCategory(this)">🌟 All Facilities</button>
+            <button class="cat-chip" onclick="filterCategory(this)">⚽ Football Turfs</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🏀 Basketball Courts</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🏋️ Modern Gyms</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🎾 Tennis Courts</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🏊 Swimming Pools</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🏸 Badminton</button>
+          </div>
+
+          <!-- Interactive Slot Booking Drawer -->
+          <div class="slot-picker-panel" id="booking-drawer" style="display: none;">
+            <div class="drawer-header">
+              <div>
+                <h3>Select Date & Time Slot: <span class="text-accent" id="chosen-venue-title">TT Nagar Champions Turf</span></h3>
+                <small>Instant confirmation with digital gate pass</small>
+              </div>
+              <button class="btn-close" onclick="closeDrawer()">✕</button>
+            </div>
+
+            <div class="drawer-dates">
+              <div class="day-select active" onclick="pickDate(this)">
+                <span>TODAY</span>
+                <strong>18 SEP</strong>
+              </div>
+              <div class="day-select" onclick="pickDate(this)">
+                <span>FRI</span>
+                <strong>19 SEP</strong>
+              </div>
+              <div class="day-select" onclick="pickDate(this)">
+                <span>SAT</span>
+                <strong>20 SEP</strong>
+              </div>
+              <div class="day-select" onclick="pickDate(this)">
+                <span>SUN</span>
+                <strong>21 SEP</strong>
+              </div>
+              <div class="day-select" onclick="pickDate(this)">
+                <span>MON</span>
+                <strong>22 SEP</strong>
+              </div>
+            </div>
+
+            <div class="drawer-slots-grid">
+              <button class="time-slot-btn booked" disabled>6:00 AM (Booked)</button>
+              <button class="time-slot-btn" onclick="selectSlot(this)">7:00 AM</button>
+              <button class="time-slot-btn" onclick="selectSlot(this)">8:00 AM</button>
+              <button class="time-slot-btn selected" onclick="selectSlot(this)">9:00 AM (Selected)</button>
+              <button class="time-slot-btn" onclick="selectSlot(this)">10:00 AM</button>
+              <button class="time-slot-btn booked" disabled>4:00 PM (Booked)</button>
+              <button class="time-slot-btn" onclick="selectSlot(this)">5:00 PM</button>
+              <button class="time-slot-btn" onclick="selectSlot(this)">6:00 PM</button>
+              <button class="time-slot-btn" onclick="selectSlot(this)">7:00 PM</button>
+              <button class="time-slot-btn booked" disabled>8:00 PM (Booked)</button>
+            </div>
+
+            <div class="drawer-checkout-row">
+              <div class="checkout-summary">
+                <span>Selected: <strong>Today • 9:00 AM - 10:00 AM</strong></span>
+                <span class="price-highlight" id="checkout-price-display">Total: ₹750</span>
+              </div>
+              <button class="btn-primary-large" onclick="confirmReservation()">Confirm & Book Now ✓</button>
+            </div>
+          </div>
+
+          <!-- Venues Grid -->
+          <div class="venues-grid">
+           
+            <!-- Venue 1 -->
+            <div class="venue-card">
+              <div class="venue-thumbnail gradient-pitch">
+                <span class="venue-symbol">⚽</span>
+                <span class="status-pill open">Available Today</span>
+                <button class="fav-heart" onclick="toggleHeartBtn(this)">🤍</button>
+              </div>
+              <div class="venue-body">
+                <div class="venue-title-row">
+                  <h3>TT Nagar Champions Turf</h3>
+                  <span class="rating">⭐ 4.9 (284)</span>
+                </div>
+                <p class="location-txt">📍 TT Nagar Stadium Complex, Bhopal • 1.1 km away</p>
+                <div class="amenities-row">
+                  <span>🌙 High Floodlights</span>
+                  <span>🚿 Changing Rooms</span>
+                  <span>🅿️ Free Parking</span>
+                  <span>👟 Cleats Allowed</span>
+                </div>
+                <div class="venue-footer-row">
+                  <div class="price-tag"><strong>₹750</strong> <small>/ hour</small></div>
+                  <button class="btn-primary" onclick="openDrawer('TT Nagar Champions Turf', '₹750')">Book Slot</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Venue 2 -->
+            <div class="venue-card">
+              <div class="venue-thumbnail gradient-court">
+                <span class="venue-symbol">🏀</span>
+                <span class="status-pill warning">Only 2 Slots Left</span>
+                <button class="fav-heart" onclick="toggleHeartBtn(this)">❤️</button>
+              </div>
+              <div class="venue-body">
+                <div class="venue-title-row">
+                  <h3>Arera Club Hardwood Court</h3>
+                  <span class="rating">⭐ 4.8 (190)</span>
+                </div>
+                <p class="location-txt">📍 E-3 Arera Colony, Bhopal • 2.4 km away</p>
+                <div class="amenities-row">
+                  <span>🏀 Wooden Flooring</span>
+                  <span>🔊 Sound System</span>
+                  <span>🥤 Hydration Bar</span>
+                </div>
+                <div class="venue-footer-row">
+                  <div class="price-tag"><strong>₹550</strong> <small>/ hour</small></div>
+                  <button class="btn-primary" onclick="openDrawer('Arera Club Hardwood Court', '₹550')">Book Slot</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Venue 3 -->
+            <div class="venue-card">
+              <div class="venue-thumbnail gradient-gym">
+                <span class="venue-symbol">🏋️</span>
+                <span class="status-pill open">Open 24/7</span>
+                <button class="fav-heart" onclick="toggleHeartBtn(this)">🤍</button>
+              </div>
+              <div class="venue-body">
+                <div class="venue-title-row">
+                  <h3>IronCore Elite Fitness Gym</h3>
+                  <span class="rating">⭐ 4.9 (340)</span>
+                </div>
+                <p class="location-txt">📍 MP Nagar Zone-1, Bhopal • 1.8 km away</p>
+                <div class="amenities-row">
+                  <span>🏋️ Olympic Barbells</span>
+                  <span>🧖 Sauna & Steam</span>
+                  <span>👟 Locker Access</span>
+                </div>
+                <div class="venue-footer-row">
+                  <div class="price-tag"><strong>₹400</strong> <small>/ day pass</small></div>
+                  <button class="btn-primary" onclick="openDrawer('IronCore Elite Fitness Gym', '₹400')">Book Slot</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Venue 4 -->
+            <div class="venue-card">
+              <div class="venue-thumbnail gradient-tennis">
+                <span class="venue-symbol">🎾</span>
+                <span class="status-pill open">Available</span>
+                <button class="fav-heart" onclick="toggleHeartBtn(this)">🤍</button>
+              </div>
+              <div class="venue-body">
+                <div class="venue-title-row">
+                  <h3>Shahpura Lakeview Tennis Club</h3>
+                  <span class="rating">⭐ 4.7 (120)</span>
+                </div>
+                <p class="location-txt">📍 Shahpura Sector-A, Bhopal • 3.2 km away</p>
+                <div class="amenities-row">
+                  <span>🎾 Clay Courts</span>
+                  <span>🌙 LED Lighting</span>
+                  <span>🎾 Racquet Rental</span>
+                </div>
+                <div class="venue-footer-row">
+                  <div class="price-tag"><strong>₹650</strong> <small>/ hour</small></div>
+                  <button class="btn-primary" onclick="openDrawer('Shahpura Lakeview Tennis Club', '₹650')">Book Slot</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Venue 5 -->
+            <div class="venue-card">
+              <div class="venue-thumbnail gradient-pool">
+                <span class="venue-symbol">🏊</span>
+                <span class="status-pill danger">Fully Booked</span>
+                <button class="fav-heart" onclick="toggleHeartBtn(this)">🤍</button>
+              </div>
+              <div class="venue-body">
+                <div class="venue-title-row">
+                  <h3>Upper Lake Water Sports Complex</h3>
+                  <span class="rating">⭐ 4.9 (240)</span>
+                </div>
+                <p class="location-txt">📍 VIP Road, Bada Talab, Bhopal • 4.1 km away</p>
+                <div class="amenities-row">
+                  <span>🏊 50m Olympic Pool</span>
+                  <span>🛶 Kayaking & Rowing</span>
+                  <span>🚿 Luxury Lockers</span>
+                </div>
+                <div class="venue-footer-row">
+                  <div class="price-tag"><strong>₹350</strong> <small>/ session</small></div>
+                  <button class="btn-disabled" disabled>Full Today</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Venue 6 -->
+            <div class="venue-card">
+              <div class="venue-thumbnail gradient-pitch">
+                <span class="venue-symbol">🏸</span>
+                <span class="status-pill open">Available</span>
+                <button class="fav-heart" onclick="toggleHeartBtn(this)">🤍</button>
+              </div>
+              <div class="venue-body">
+                <div class="venue-title-row">
+                  <h3>Kolar Smash Badminton Arena</h3>
+                  <span class="rating">⭐ 4.6 (170)</span>
+                </div>
+                <p class="location-txt">📍 Kolar Road, Bhopal • 5.3 km away</p>
+                <div class="amenities-row">
+                  <span>🏸 6 Synthetic Courts</span>
+                  <span>❄️ Air Conditioned</span>
+                  <span>🅿️ Free Parking</span>
+                </div>
+                <div class="venue-footer-row">
+                  <div class="price-tag"><strong>₹300</strong> <small>/ hour</small></div>
+                  <button class="btn-primary" onclick="openDrawer('Kolar Smash Badminton Arena', '₹300')">Book Slot</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SCREEN 6: EVENTS & TOURNAMENTS
+      ========================================================= -->
+      <section class="screen-view" id="view-events">
+        <div class="events-page-container">
+         
+          <!-- Events Top Banner -->
+          <div class="events-hero-banner">
+            <div class="events-hero-content">
+              <h1>🏆 Tournaments & Sports Events</h1>
+              <p>Compete in local city cups, register your team, or host your own sports tournament with bracket management.</p>
+              <div class="hero-btn-row">
+                <button class="btn-primary-large" onclick="toggleHostModal(true)">🎯 Host an Event Now</button>
+                <button class="btn-outline-large" onclick="showToast('Filtering active cash prize tournaments in MP!')">💰 Cash Prize Events</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Host Event Modal -->
+          <div class="host-event-modal" id="host-modal" style="display: none;">
+            <div class="host-modal-inner">
+              <div class="modal-top">
+                <h2>🎯 Host Your Sports Event on Sportify</h2>
+                <button class="btn-close" onclick="toggleHostModal(false)">✕</button>
+              </div>
+
+              <form id="host-event-form" onsubmit="handleEventPublish(event)">
+                <div class="form-grid">
+                  <div class="input-field">
+                    <label>Event Name *</label>
+                    <input type="text" id="evt-title" placeholder="e.g. Bhopal Monsoon 5v5 Soccer Cup" required />
+                  </div>
+
+                  <div class="input-field">
+                    <label>Sport Category *</label>
+                    <select id="evt-sport" required>
+                      <option value="Football">⚽ Football</option>
+                      <option value="Cricket">🏏 Cricket</option>
+                      <option value="Basketball">🏀 Basketball</option>
+                      <option value="Tennis">🎾 Tennis</option>
+                      <option value="Badminton">🏸 Badminton</option>
+                      <option value="Running">🏃 Marathon / 5K</option>
+                      <option value="CrossFit">🏋️ Fitness Challenge</option>
+                    </select>
+                  </div>
+
+                  <div class="input-field">
+                    <label>Date *</label>
+                    <input type="date" id="evt-date" required />
+                  </div>
+
+                  <div class="input-field">
+                    <label>Time *</label>
+                    <input type="time" id="evt-time" required />
+                  </div>
+
+                  <div class="input-field">
+                    <label>Venue / Location *</label>
+                    <input type="text" id="evt-venue" placeholder="e.g. TT Nagar Stadium Grounds, Bhopal" required />
+                  </div>
+
+                  <div class="input-field">
+                    <label>Registration Fee (₹)</label>
+                    <input type="number" id="evt-fee" placeholder="0 for Free Event" />
+                  </div>
+
+                  <div class="input-field">
+                    <label>Total Max Teams / Athletes</label>
+                    <input type="number" id="evt-max" placeholder="e.g. 16 teams" />
+                  </div>
+
+                  <div class="input-field">
+                    <label>Tournament Format</label>
+                    <select>
+                      <option>Knockout Bracket</option>
+                      <option>Round Robin + Finals</option>
+                      <option>Casual Open Play</option>
+                    </select>
+                  </div>
+
+                  <div class="input-field full-width">
+                    <label>Event Description & Rules</label>
+                    <textarea rows="3" placeholder="Explain the tournament rules, age categories, prize trophies, and gear needed..."></textarea>
+                  </div>
+                </div>
+
+                <div class="form-submit-row">
+                  <button type="button" class="btn-outline" onclick="toggleHostModal(false)">Cancel</button>
+                  <button type="submit" class="btn-primary">🚀 Publish Event Live</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Featured Championship Card -->
+          <div class="featured-tournament-card">
+            <div class="ft-banner">
+              <span class="ft-badge">⭐ FEATURED TOURNAMENT</span>
+              <h2>Bhopal Inter-City Football Cup 2026</h2>
+              <p>24 Teams across MP • Knockout Format • ₹60,000 Total Cash Prize & Championship Trophy</p>
+            </div>
+            <div class="ft-details-bar">
+              <div class="ft-info-chip">📅 Sep 22 - Sep 28, 2026</div>
+              <div class="ft-info-chip">📍 TT Nagar Stadium, Bhopal</div>
+              <div class="ft-info-chip">👥 11-A-Side (18 registered)</div>
+              <div class="ft-info-chip">💰 ₹2,000 / Team</div>
+              <button class="btn-primary" onclick="showToast('Team registration portal opened!')">Register Team Now →</button>
+            </div>
+          </div>
+
+          <!-- Events Filter Bar -->
+          <div class="events-filter-bar">
+            <button class="cat-chip active" onclick="filterCategory(this)">All Tournaments</button>
+            <button class="cat-chip" onclick="filterCategory(this)">⚽ Football</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🏏 Cricket</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🏀 Basketball</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🎾 Tennis</button>
+            <button class="cat-chip" onclick="filterCategory(this)">🏃 Marathons</button>
+          </div>
+
+          <!-- Upcoming Events Grid -->
+          <div class="events-grid" id="events-feed">
+           
+            <!-- Event 1 -->
+            <div class="event-box">
+              <div class="event-banner gradient-pitch">
+                <span class="sport-icon">⚽</span>
+                <div class="calendar-stamp">
+                  <strong>22</strong>
+                  <small>SEP</small>
+                </div>
+              </div>
+              <div class="event-body">
+                <span class="evt-pill football">⚽ 5v5 Turf Battle</span>
+                <h3>Monsoon Kickoff Cup 2026</h3>
+                <div class="evt-meta-list">
+                  <p>📍 TT Nagar Turf, Bhopal</p>
+                  <p>⏰ 7:00 AM - 1:00 PM</p>
+                  <p>💰 ₹250 / player • Trophy + Medals</p>
+                </div>
+                <div class="event-footer">
+                  <div class="roster-avatar-stack">
+                    <span class="av-mini bg-blue">RM</span>
+                    <span class="av-mini bg-orange">AK</span>
+                    <span class="av-mini bg-pink">PS</span>
+                    <span class="stack-count">+14 joined</span>
+                  </div>
+                  <button class="btn-join" onclick="toggleJoinEvent(this)">Join Event</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Event 2 -->
+            <div class="event-box">
+              <div class="event-banner gradient-court">
+                <span class="sport-icon">🏏</span>
+                <div class="calendar-stamp">
+                  <strong>25</strong>
+                  <small>SEP</small>
+                </div>
+              </div>
+              <div class="event-body">
+                <span class="evt-pill cricket">🏏 T20 Tennis Ball League</span>
+                <h3>Aishbagh Smash Tournament</h3>
+                <div class="evt-meta-list">
+                  <p>📍 Aishbagh Stadium Ground, Bhopal</p>
+                  <p>⏰ 8:00 AM - 5:00 PM</p>
+                  <p>💰 ₹1,000 / team • ₹15K Prize</p>
+                </div>
+                <div class="event-footer">
+                  <div class="roster-avatar-stack">
+                    <span class="av-mini bg-orange">AK</span>
+                    <span class="av-mini bg-teal">SR</span>
+                    <span class="stack-count">+8 teams</span>
+                  </div>
+                  <button class="btn-join joined" onclick="toggleJoinEvent(this)">✓ Registered</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Event 3 -->
+            <div class="event-box">
+              <div class="event-banner gradient-gym">
+                <span class="sport-icon">🏀</span>
+                <div class="calendar-stamp">
+                  <strong>28</strong>
+                  <small>SEP</small>
+                </div>
+              </div>
+              <div class="event-body">
+                <span class="evt-pill basketball">🏀 3x3 Street Ball</span>
+                <h3>Urban Hoops Jam 2026</h3>
+                <div class="evt-meta-list">
+                  <p>📍 Arera Club Basketball Court, Bhopal</p>
+                  <p>⏰ 4:00 PM - 9:00 PM</p>
+                  <p>💰 ₹500 / team • Custom Jerseys</p>
+                </div>
+                <div class="event-footer">
+                  <div class="roster-avatar-stack">
+                    <span class="av-mini bg-pink">PS</span>
+                    <span class="av-mini bg-purple">KT</span>
+                    <span class="stack-count">+10 teams</span>
+                  </div>
+                  <button class="btn-join" onclick="toggleJoinEvent(this)">Join Event</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Event 4 -->
+            <div class="event-box">
+              <div class="event-banner gradient-tennis">
+                <span class="sport-icon">🏃</span>
+                <div class="calendar-stamp">
+                  <strong>30</strong>
+                  <small>SEP</small>
+                </div>
+              </div>
+              <div class="event-body">
+                <span class="evt-pill running">🏃 5K / 10K City Run</span>
+                <h3>Upper Lake Sunrise Marathon</h3>
+                <div class="evt-meta-list">
+                  <p>📍 VIP Road & Bada Talab, Bhopal</p>
+                  <p>⏰ 5:30 AM - 8:30 AM</p>
+                  <p>💰 FREE • Finisher Medals & Breakfast</p>
+                </div>
+                <div class="event-footer">
+                  <div class="roster-avatar-stack">
+                    <span class="av-mini bg-teal">SR</span>
+                    <span class="av-mini bg-indigo">DP</span>
+                    <span class="stack-count">+280 runners</span>
+                  </div>
+                  <button class="btn-join" onclick="toggleJoinEvent(this)">Join Event</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ========================================================
+       MODAL: STORY EDITOR (Instagram-style)
+  ========================================================= -->
+  <div class="auth-modal story-editor-overlay" id="story-editor-modal" style="display: none;">
+    <div class="story-editor-card">
+
+      <!-- Story Editor Header -->
+      <div class="story-editor-header">
+        <div class="story-editor-title">
+          <span class="story-editor-brand">⚡</span>
+          <h3>Add to Story</h3>
+        </div>
+        <button class="btn-close" onclick="closeStoryEditorModal()">✕</button>
+      </div>
+
+      <!-- Story Editor Body -->
+      <div class="story-editor-body">
+
+        <!-- Left: Story Preview Canvas -->
+        <div class="story-canvas-col">
+          <div class="story-canvas" id="story-canvas" onclick="openStoryFilePicker()">
+            <!-- Background: photo/video or gradient -->
+            <div class="story-bg-layer" id="story-bg-layer">
+              <div class="story-bg-placeholder" id="story-bg-placeholder">
+                <span class="story-bg-icon">📸</span>
+                <p>Tap to add photo or video</p>
+              </div>
+              <img id="story-preview-img" src="" alt="" class="story-preview-media" style="display:none;" />
+              <video id="story-preview-video" class="story-preview-media" controls style="display:none;"></video>
+            </div>
+
+            <!-- Selected Filter overlay -->
+            <div class="story-filter-overlay" id="story-filter-overlay"></div>
+
+            <!-- Text Overlay Badge -->
+            <div class="story-text-overlay" id="story-text-overlay" style="display:none;"></div>
+
+            <!-- Sticker Badge -->
+            <div class="story-sticker-overlay" id="story-sticker-overlay" style="display:none;font-size:48px;"></div>
+
+            <!-- Music track badge -->
+            <div class="story-music-badge" id="story-music-badge" style="display:none;">
+              <span>🎵</span>
+              <span id="story-music-badge-text">No music</span>
+            </div>
+
+            <!-- Top Toolbar (inside canvas) -->
+            <div class="story-canvas-tools" onclick="event.stopPropagation()">
+              <button class="story-tool-btn" onclick="openStoryFilePicker()" title="Add Photo/Video">📎</button>
+              <button class="story-tool-btn" onclick="toggleStoryTextInput()" title="Add Text">Aa</button>
+            </div>
+          </div>
+
+          <!-- Story text input (hidden by default) -->
+          <div class="story-text-input-wrap" id="story-text-input-wrap" style="display:none;">
+            <input type="text" id="story-text-input" class="story-text-input" placeholder="Type something..." oninput="updateStoryTextOverlay(this.value)" />
+            <button class="btn-tool-chip" onclick="confirmStoryText()">Done</button>
+          </div>
+
+          <input type="file" id="story-file-input" accept="image/*,video/*" style="display:none;" onchange="handleStoryFileSelect(event)" />
+        </div>
+
+        <!-- Right: Story Customization Panel -->
+        <div class="story-form-col">
+
+          <!-- Upload Media Button -->
+          <div class="story-form-group">
+            <label class="story-form-label">📸 Media</label>
+            <button class="story-media-upload-btn" onclick="openStoryFilePicker()">
+              <span>📎</span> Choose Photo or Video
+            </button>
+          </div>
+
+          <!-- Caption -->
+          <div class="story-form-group">
+            <label class="story-form-label">✏️ Caption</label>
+            <textarea id="story-caption" class="story-textarea" rows="2" placeholder="Add a caption to your story..."></textarea>
+          </div>
+
+          <!-- Music Track -->
+          <div class="story-form-group">
+            <label class="story-form-label">🎵 Add Music</label>
+            <div class="story-music-grid" id="story-music-grid">
+              <button class="story-music-chip active" data-track="" onclick="selectStoryMusic(this, '', '')">🔇 No Music</button>
+              <button class="story-music-chip" data-track="Believer" onclick="selectStoryMusic(this, 'Believer', '🎵 Believer – Imagine Dragons')">🥊 Believer</button>
+              <button class="story-music-chip" data-track="Eye of the Tiger" onclick="selectStoryMusic(this, 'Eye of the Tiger', '🎵 Eye of the Tiger – Survivor')">🐯 Eye of the Tiger</button>
+              <button class="story-music-chip" data-track="Lose Yourself" onclick="selectStoryMusic(this, 'Lose Yourself', '🎵 Lose Yourself – Eminem')">🎤 Lose Yourself</button>
+              <button class="story-music-chip" data-track="Hall of Fame" onclick="selectStoryMusic(this, 'Hall of Fame', '🎵 Hall of Fame – The Script')">🏆 Hall of Fame</button>
+              <button class="story-music-chip" data-track="Stronger" onclick="selectStoryMusic(this, 'Stronger', '🎵 Stronger – Kanye West')">💪 Stronger</button>
+              <button class="story-music-chip" data-track="Thunder" onclick="selectStoryMusic(this, 'Thunder', '🎵 Thunder – Imagine Dragons')">⚡ Thunder</button>
+              <button class="story-music-chip" data-track="Custom" onclick="promptCustomStoryMusic()">+ Custom Track</button>
+            </div>
+          </div>
+
+          <!-- Stickers -->
+          <div class="story-form-group">
+            <label class="story-form-label">🎯 Stickers</label>
+            <div class="story-sticker-grid">
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '')">✕ None</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '⚽')">⚽</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🏏')">🏏</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🏀')">🏀</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🎾')">🎾</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🏋️')">🏋️</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🔥')">🔥</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🏆')">🏆</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '⚡')">⚡</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '💪')">💪</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🥇')">🥇</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🎯')">🎯</button>
+              <button class="story-sticker-btn" onclick="addStorySticker(this, '🏅')">🏅</button>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="story-form-group">
+            <label class="story-form-label">🎨 Filter</label>
+            <div class="story-filter-grid" id="story-filter-grid">
+              <button class="story-filter-chip active" onclick="applyStoryFilter(this, 'none', '')" data-filter="none">None</button>
+              <button class="story-filter-chip" onclick="applyStoryFilter(this, 'warm', 'story-filter-warm')" data-filter="warm">🌅 Warm</button>
+              <button class="story-filter-chip" onclick="applyStoryFilter(this, 'cool', 'story-filter-cool')" data-filter="cool">❄️ Cool</button>
+              <button class="story-filter-chip" onclick="applyStoryFilter(this, 'dramatic', 'story-filter-dramatic')" data-filter="dramatic">🎭 Dramatic</button>
+              <button class="story-filter-chip" onclick="applyStoryFilter(this, 'vintage', 'story-filter-vintage')" data-filter="vintage">📷 Vintage</button>
+              <button class="story-filter-chip" onclick="applyStoryFilter(this, 'neon', 'story-filter-neon')" data-filter="neon">🌈 Neon</button>
+            </div>
+          </div>
+
+          <!-- Audience -->
+          <div class="story-form-group">
+            <label class="story-form-label">👥 Audience</label>
+            <div class="upload-audience-row">
+              <label class="upload-audience-opt">
+                <input type="radio" name="story-audience" value="everyone" checked />
+                <span>🌐 Everyone</span>
+              </label>
+              <label class="upload-audience-opt">
+                <input type="radio" name="story-audience" value="followers" />
+                <span>👥 Followers</span>
+              </label>
+              <label class="upload-audience-opt">
+                <input type="radio" name="story-audience" value="private" />
+                <span>🔒 Only Me</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Story Actions -->
+          <div class="story-actions-row">
+            <button type="button" class="btn-outline" onclick="closeStoryEditorModal()">Cancel</button>
+            <button type="button" class="btn-primary story-publish-btn" id="story-publish-btn" onclick="publishStory()">
+              <span id="story-publish-label">📤 Share Story</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       MODAL: UPLOAD POST / REEL
+  ========================================================= -->
+  <div class="auth-modal upload-modal-overlay" id="upload-modal" style="display: none;">
+    <div class="upload-modal-card">
+
+      <!-- Modal Header -->
+      <div class="upload-modal-header">
+        <div class="upload-modal-title-row">
+          <span class="upload-modal-brand">⚡ Sportify</span>
+          <h3 id="upload-modal-heading">Create New Post</h3>
+        </div>
+        <button class="btn-close" onclick="closeUploadModal()">✕</button>
+      </div>
+
+      <!-- Type Toggle (Post / Reel) -->
+      <div class="upload-type-toggle">
+        <button class="upload-type-btn active" id="upload-type-post" onclick="setUploadType('post')">
+          <span>📷</span> Photo Post
+        </button>
+        <button class="upload-type-btn" id="upload-type-reel" onclick="setUploadType('reel')">
+          <span>🎬</span> Reel / Video
+        </button>
+      </div>
+
+      <div class="upload-modal-body">
+
+        <!-- Left: Drop Zone + Preview -->
+        <div class="upload-drop-zone-col">
+          <div class="upload-drop-zone" id="upload-drop-zone"
+               ondragover="handleDragOver(event)"
+               ondragleave="handleDragLeave(event)"
+               ondrop="handleFileDrop(event)"
+               onclick="document.getElementById('upload-file-input').click()">
+            <div class="upload-drop-inner" id="upload-drop-placeholder">
+              <div class="upload-drop-icon" id="upload-type-icon">📷</div>
+              <p class="upload-drop-title">Drag & Drop your file here</p>
+              <p class="upload-drop-sub" id="upload-drop-sub">PNG, JPG, GIF up to 50 MB</p>
+              <button type="button" class="btn-primary upload-browse-btn">Browse Files</button>
+            </div>
+            <div class="upload-preview-wrap" id="upload-preview-wrap" style="display:none;">
+              <img id="upload-preview-img" src="" alt="Preview" class="upload-preview-img" />
+              <video id="upload-preview-video" class="upload-preview-video" controls style="display:none;"></video>
+              <div class="upload-preview-badge" id="upload-preview-badge">📷 Photo</div>
+              <button class="upload-remove-btn" onclick="clearUploadPreview(event)" title="Remove">✕</button>
+            </div>
+          </div>
+          <input type="file" id="upload-file-input" accept="image/*,video/*" style="display:none;" onchange="handleFileSelect(event)" />
+        </div>
+
+        <!-- Right: Form Fields -->
+        <div class="upload-form-col">
+          <!-- Caption -->
+          <div class="upload-form-group">
+            <label class="upload-label">Caption</label>
+            <textarea id="upload-caption" class="upload-textarea" rows="4"
+              placeholder="Describe your moment — match highlights, training grind, tournament victory..."></textarea>
+            <span class="upload-char-count" id="upload-char-count">0 / 2200</span>
+          </div>
+
+          <!-- Hashtags -->
+          <div class="upload-form-group">
+            <label class="upload-label">Hashtags</label>
+            <div class="upload-tag-chips" id="upload-tag-chips">
+              <button type="button" class="upload-chip active" onclick="toggleHashtag(this, '#SportifyMatch')">#SportifyMatch</button>
+              <button type="button" class="upload-chip" onclick="toggleHashtag(this, '#MatchDay')">#MatchDay</button>
+              <button type="button" class="upload-chip" onclick="toggleHashtag(this, '#Training')">#Training</button>
+              <button type="button" class="upload-chip" onclick="toggleHashtag(this, '#Fitness')">#Fitness</button>
+              <button type="button" class="upload-chip" onclick="toggleHashtag(this, '#Tournament')">#Tournament</button>
+              <button type="button" class="upload-chip" onclick="toggleHashtag(this, '#TTNagar')">#TTNagar</button>
+              <button type="button" class="upload-chip" onclick="toggleHashtag(this, '#Bhopal')">#Bhopal</button>
+            </div>
+            <input type="text" id="upload-custom-tag" class="upload-input" placeholder="Add custom tag (press Enter)" onkeydown="addCustomTag(event)" />
+          </div>
+
+          <!-- Location -->
+          <div class="upload-form-group">
+            <label class="upload-label">📍 Location (optional)</label>
+            <input type="text" id="upload-location" class="upload-input" placeholder="e.g. TT Nagar Stadium, Bhopal" />
+          </div>
+
+          <!-- Audience -->
+          <div class="upload-form-group">
+            <label class="upload-label">👥 Audience</label>
+            <div class="upload-audience-row">
+              <label class="upload-audience-opt">
+                <input type="radio" name="upload-audience" value="everyone" checked />
+                <span>🌐 Everyone</span>
+              </label>
+              <label class="upload-audience-opt">
+                <input type="radio" name="upload-audience" value="followers" />
+                <span>👥 Followers</span>
+              </label>
+              <label class="upload-audience-opt">
+                <input type="radio" name="upload-audience" value="private" />
+                <span>🔒 Only Me</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Reel-only: Duration badge -->
+          <div class="upload-reel-options" id="upload-reel-options" style="display:none;">
+            <div class="upload-form-group">
+              <label class="upload-label">🎵 Add Audio Track (optional)</label>
+              <input type="text" id="upload-audio-track" class="upload-input" placeholder="e.g. Believer – Imagine Dragons" />
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="upload-actions-row">
+            <button type="button" class="btn-outline" onclick="closeUploadModal()">Cancel</button>
+            <button type="button" class="btn-primary upload-publish-btn" id="upload-publish-btn" onclick="publishUpload()">
+              <span id="upload-publish-label">📤 Publish Post</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase JavaScript library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase connection -->
+  <script src="supabase.js"></script>
+  <script src="appjava.js"></script>
+</body>
+</html>

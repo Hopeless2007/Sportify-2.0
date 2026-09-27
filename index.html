@@ -1,0 +1,955 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SPORTIFY | Start Your Journey</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <!-- =========================================
+         BACKGROUND DECORATION
+    ========================================== -->
+
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+
+
+    <!-- =========================================
+         MAIN APPLICATION
+    ========================================== -->
+
+    <main class="app">
+
+
+        <!-- =========================================
+             TOP BAR
+        ========================================== -->
+
+        <header class="top-bar">
+
+            <div class="logo">
+                SPORT<span>IFY</span>
+            </div>
+
+            <div class="step-counter">
+                STEP <span id="currentStep">1</span>/7
+            </div>
+
+        </header>
+
+
+        <!-- =========================================
+             PROGRESS BAR
+        ========================================== -->
+
+        <div class="progress-container">
+
+            <div class="progress-bar"
+                 id="progressBar">
+            </div>
+
+        </div>
+        <!-- ==========================================
+             ALREADY REGISTERED
+        ========================================== -->
+
+        <div class="already-registered">
+
+            <p>Already registered?</p>
+
+            <button
+                type="button"
+                class="login-btn"
+                onclick="showExistingUserLogin()"
+            >
+                Login with Phone number
+            </button>
+
+        </div>
+        <!-- =====================================
+            EXISTING USER LOGIN SCREEN
+        ===================================== -->
+
+        <div
+            class="existing-login-screen"
+            id="existingLoginScreen"
+            style="display: none;"
+        >
+
+            <div class="login-card">
+
+                <h2>Welcome Back 👋</h2>
+
+                <p>
+                    Already registered with SPORTIFY?
+                </p>
+
+                <!-- MOBILE NUMBER -->
+                <input
+                    type="tel"
+                    id="loginMobile"
+                    placeholder="Enter your mobile number"
+                    maxlength="10"
+                    inputmode="numeric"
+                >
+
+                <!-- SEND OTP -->
+                <button
+                    type="button"
+                    class="login-btn"
+                    id="sendLoginOtpBtn"
+                    onclick="sendLoginOTP()"
+                >
+                    Send OTP →
+                </button>
+
+
+                <!-- OTP AREA -->
+                <div
+                    id="loginOtpArea"
+                    style="display: none;"
+                >
+
+                    <p>
+                        Enter the 6-digit OTP
+                    </p>
+
+                    <input
+                        type="text"
+                        id="loginOtp"
+                        placeholder="Enter OTP"
+                        maxlength="6"
+                        inputmode="numeric"
+                    >
+
+                    <button
+                        type="button"
+                        class="login-btn"
+                        id="verifyLoginOtpBtn"
+                        onclick="verifyLoginOTP()"
+                    >
+                        Verify OTP →
+                    </button>
+
+                    <p id="loginOtpTimer"></p>
+
+                </div>
+
+
+                <!-- BACK TO REGISTRATION -->
+                <button
+                    type="button"
+                    class="back-btn"
+                    onclick="backToRegistration()"
+                >
+                    ← New Registration
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+             FORM CARD
+        ========================================== -->
+
+        <section class="form-card">
+
+
+            <!-- =====================================
+                 STEP 1 - NAME
+            ====================================== -->
+
+            <div class="step active"
+                 id="step1">
+
+                <div class="emoji">
+                    👋
+                </div>
+
+                <p class="small-heading">
+                    LET'S START
+                </p>
+
+                <h1>
+                    What's your<br>
+                    <span>name?</span>
+                </h1>
+
+                <p class="description">
+                    Tell us what we should call you.
+                </p>
+
+
+                <div class="input-container">
+
+                    <label for="name">
+                        FULL NAME
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your name"
+                        autocomplete="name"
+                    >
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="next-btn"
+                    onclick="nextStep()">
+
+                    Continue
+                    <span>→</span>
+
+                </button>
+
+            </div>
+          
+            <!-- =====================================
+                 STEP 2 - STATE
+            ====================================== -->
+
+            <div class="step"
+                 id="step2">
+
+                <div class="emoji">
+                    📍
+                </div>
+
+                <p class="small-heading">
+                    YOUR LOCATION
+                </p>
+
+                <h1>
+                    Which <span>state</span><br>
+                    are you from?
+                </h1>
+
+                <p class="description">
+                    This helps us personalize your experience.
+                </p>
+
+
+                <div class="input-container">
+
+                    <label for="state">
+                        STATE
+                    </label>
+
+                    <select id="state">
+
+                        <option value="">
+                            Select your state
+                        </option>
+
+                        <option>Andhra Pradesh</option>
+                        <option>Arunachal Pradesh</option>
+                        <option>Assam</option>
+                        <option>Bihar</option>
+                        <option>Chhattisgarh</option>
+                        <option>Goa</option>
+                        <option>Gujarat</option>
+                        <option>Haryana</option>
+                        <option>Himachal Pradesh</option>
+                        <option>Jharkhand</option>
+                        <option>Karnataka</option>
+                        <option>Kerala</option>
+                        <option>Madhya Pradesh</option>
+                        <option>Maharashtra</option>
+                        <option>Manipur</option>
+                        <option>Meghalaya</option>
+                        <option>Mizoram</option>
+                        <option>Nagaland</option>
+                        <option>Odisha</option>
+                        <option>Punjab</option>
+                        <option>Rajasthan</option>
+                        <option>Sikkim</option>
+                        <option>Tamil Nadu</option>
+                        <option>Telangana</option>
+                        <option>Tripura</option>
+                        <option>Uttar Pradesh</option>
+                        <option>Uttarakhand</option>
+                        <option>West Bengal</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button
+                        type="button"
+                        class="back-btn"
+                        onclick="previousStep()">
+
+                        ← Back
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="next-btn"
+                        onclick="nextStep()">
+
+                        Continue →
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 STEP 3 - CITY
+            ====================================== -->
+
+            <div class="step"
+                 id="step3">
+
+                <div class="emoji">
+                    🏙️
+                </div>
+
+                <p class="small-heading">
+                    ALMOST THERE
+                </p>
+
+                <h1>
+                    What's your<br>
+                    <span>city?</span>
+                </h1>
+
+                <p class="description">
+                    Tell us where you're currently based.
+                </p>
+
+
+                <div class="input-container">
+
+                    <label for="city">
+                        CITY
+                    </label>
+
+                    <input
+                        type="text"
+                        id="city"
+                        placeholder="e.g. Bhopal"
+                    >
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button
+                        type="button"
+                        class="back-btn"
+                        onclick="previousStep()">
+
+                        ← Back
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="next-btn"
+                        onclick="nextStep()">
+
+                        Continue →
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 STEP 4 - MOBILE
+            ====================================== -->
+
+            <div class="step"
+                 id="step4">
+
+                <div class="emoji">
+                    📱
+                </div>
+
+                <p class="small-heading">
+                    STAY CONNECTED
+                </p>
+
+                <h1>
+                    Your <span>mobile</span><br>
+                    number?
+                </h1>
+
+                <p class="description">
+                    We'll use this to secure your account.
+                </p>
+
+
+                <div class="input-container">
+
+                    <label for="mobile">
+                        MOBILE NUMBER
+                    </label>
+
+
+                    <div class="phone-input">
+
+                        <span>
+                            +91
+                        </span>
+
+                        <input
+                            type="tel"
+                            id="mobile"
+                            placeholder="Enter 10 digit number"
+                            maxlength="10"
+                            inputmode="numeric"
+                            autocomplete="tel"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button
+                        type="button"
+                        class="back-btn"
+                        onclick="previousStep()">
+
+                        ← Back
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="next-btn"
+                        onclick="nextStep()">
+
+                        Continue →
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 STEP 5 - GENDER
+            ====================================== -->
+
+            <div class="step"
+                 id="step5">
+
+                <div class="emoji">
+                    ✨
+                </div>
+
+                <p class="small-heading">
+                    ABOUT YOU
+                </p>
+
+                <h1>
+                    Choose your<br>
+                    <span>gender.</span>
+                </h1>
+
+                <p class="description">
+                    Select the option that applies to you.
+                </p>
+
+
+                <div class="gender-container">
+
+
+                    <!-- MALE -->
+
+                    <button
+                        type="button"
+                        class="gender-card"
+                        onclick="selectGender(this, 'Male')">
+
+                        <div class="gender-icon">
+                            ♂
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Male
+                            </strong>
+
+                            <small>
+                                Let's go 💪
+                            </small>
+
+                        </div>
+
+                    </button>
+
+
+                    <!-- FEMALE -->
+
+                    <button
+                        type="button"
+                        class="gender-card"
+                        onclick="selectGender(this, 'Female')">
+
+                        <div class="gender-icon">
+                            ♀
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Female
+                            </strong>
+
+                            <small>
+                                Let's go 🔥
+                            </small>
+
+                        </div>
+
+                    </button>
+
+                </div>
+
+
+                <!-- Hidden gender value -->
+
+                <input
+                    type="hidden"
+                    id="gender"
+                    value=""
+                >
+
+
+                <div class="button-row">
+
+                    <button
+                        type="button"
+                        class="back-btn"
+                        onclick="previousStep()">
+
+                        ← Back
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="next-btn"
+                        onclick="nextStep()">
+
+                        Continue →
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 STEP 6 - PROFILE PHOTO
+            ====================================== -->
+
+            <div class="step"
+                 id="step6">
+
+                <div class="emoji">
+                    📸
+                </div>
+
+                <p class="small-heading">
+                    MAKE IT YOU
+                </p>
+
+                <h1>
+                    Add your<br>
+                    <span>profile photo.</span>
+                </h1>
+
+                <p class="description">
+                    Add a photo so your fitness profile feels like yours.
+                </p>
+
+
+                <div class="profile-photo-area">
+
+
+                    <!-- PHOTO PREVIEW -->
+
+                    <div class="profile-preview">
+
+                        <span id="profilePlaceholder">
+                            👤
+                        </span>
+
+                        <img
+                            id="profileImage"
+                            alt="Profile preview"
+                        >
+
+                    </div>
+
+
+                    <!-- UPLOAD BUTTON -->
+
+                    <label
+                        for="profilePhoto"
+                        class="upload-btn">
+
+                        📷 Choose / Take Photo
+
+                    </label>
+
+
+                    <!-- FILE INPUT -->
+
+                    <input
+                        type="file"
+                        id="profilePhoto"
+                        accept="image/*"
+                        capture="user"
+                    >
+
+
+                    <p>
+                        JPG, PNG or camera photo
+                    </p>
+
+                </div>
+
+
+                <div class="button-row">
+
+                    <button
+                        type="button"
+                        class="back-btn"
+                        onclick="previousStep()">
+
+                        ← Back
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="next-btn"
+                        onclick="nextStep()">
+
+                        Continue →
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 STEP 7 - OTP VERIFICATION
+            ====================================== -->
+
+            <div class="step"
+                 id="step7">
+
+                <div class="emoji">
+                    🔐
+                </div>
+
+                <p class="small-heading">
+                    SECURITY CHECK
+                </p>
+
+                <h1>
+                    Verify your<br>
+                    <span>mobile.</span>
+                </h1>
+
+                <p class="description">
+                    We'll send a 6-digit OTP to your mobile number.
+                    Your OTP will expire in 10 minutes.
+                </p>
+
+
+                <!-- MOBILE NUMBER DISPLAY -->
+
+                <div class="input-container">
+
+                    <label>
+                        MOBILE NUMBER
+                    </label>
+
+                    <div class="phone-display">
+
+                        +91
+                        <span id="otpMobileDisplay">
+                            XXXXXXXXXX
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SEND OTP BUTTON -->
+
+                <button
+                    type="button"
+                    class="next-btn"
+                    id="sendOtpBtn"
+                    onclick="sendOTP()">
+
+                    Send OTP →
+
+                </button>
+
+
+                <!-- OTP AREA -->
+
+                <div
+                    id="otpArea"
+                    style="display: none;"
+                >
+
+
+                    <!-- OTP INPUT -->
+
+                    <div class="input-container">
+
+                        <label for="otp">
+                            ENTER OTP
+                        </label>
+
+                        <input
+                            type="text"
+                            id="otp"
+                            placeholder="Enter 6-digit OTP"
+                            maxlength="6"
+                            inputmode="numeric"
+                            autocomplete="one-time-code"
+                        >
+
+                    </div>
+
+
+                    <!-- OTP TIMER -->
+
+                    <p id="otpTimer">
+                        OTP expires in: 10:00
+                    </p>
+
+
+                    <!-- VERIFY BUTTON ROW -->
+
+                    <div class="button-row">
+
+                        <button
+                            type="button"
+                            class="back-btn"
+                            onclick="previousStep()">
+
+                            ← Back
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="next-btn"
+                            id="verifyOtpBtn"
+                            onclick="verifyOTP()">
+
+                            Verify OTP →
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- RESEND OTP -->
+
+                    <button
+                        type="button"
+                        class="back-btn"
+                        id="resendOtpBtn"
+                        onclick="sendOTP()"
+                        style="display: none; margin-top: 15px;">
+
+                        Resend OTP
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 SUCCESS SCREEN
+            ====================================== -->
+
+            <div
+                class="success-screen"
+                id="successScreen"
+            >
+
+                <div class="success-icon">
+                    ✓
+                </div>
+
+
+                <p class="small-heading">
+                    YOU'RE IN
+                </p>
+
+
+                <h1>
+                    Welcome to<br>
+                    <span>SPORTIFY.</span>
+                </h1>
+
+
+                <p class="description">
+                    Your fitness journey starts now.
+                    Let's make every rep count.
+                </p>
+
+
+                <!-- REGISTRATION SUMMARY -->
+
+                <div class="summary-card">
+
+                    <div>
+
+                        <span>
+                            Name
+                        </span>
+
+                        <strong id="summaryName">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Location
+                        </span>
+
+                        <strong id="summaryLocation">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Gender
+                        </span>
+
+                        <strong id="summaryGender">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ENTER SPORTIFY -->
+
+                <button
+                    type="button"
+                    class="dashboard-btn"
+                    onclick="window.location.href='app.html'">
+
+                    Enter SPORTIFY →
+
+                </button>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =========================================
+             FOOTER
+        ========================================== -->
+
+        <footer>
+
+            <span>
+                SPORTIFY © 2026
+            </span>
+
+            <span>
+                BUILT FOR THE NEXT GENERATION ⚡
+            </span>
+
+        </footer>
+
+
+    </main>
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+    
+     <!-- Supabase JavaScript library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Your Supabase connection -->
+    <script src="supabase.js"></script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
+
+
