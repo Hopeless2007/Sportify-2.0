@@ -10,7 +10,7 @@ console.log("SPORTIFY SCRIPT IS WORKING");
 // GLOBAL VARIABLES
 // ======================================================
 
-const BACKEND_URL = "https://sih-project-3-e5r6.onrender.com";
+const BACKEND_URL = "https://sportify-2-0.onrender.com";
 
 let currentStep = 1;
 const totalSteps = 7;
